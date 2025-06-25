@@ -72,6 +72,16 @@ Example:
 
     GET /api/v1/tasks?status=completed&priority=high&start_date=2024-01-01&end_date=2024-12-31&per_page=5
 
+   
+## Audit Trail
+
+The application includes an audit trail system for tracking changes to tasks. This feature uses Laravel's model observers and a polymorphic relationship to log activity.
+
+- All task creation, updates and deletes are automatically logged.
+- Each log includes the type of action (`created`, `updated`, `deleted`) and the `before` and `after` state of the task (for updates and deletes).
+- Logs are stored in a dedicated `activity_logs` table using a polymorphic relationship.
+- The `user_id` field is nullable, as authentication is not implemented in this project.
+- Logs are not included in task API responses by default. They can be queried directly from the database or exposed through a dedicated endpoint if needed.
     
 ## Architectural Decisions
 

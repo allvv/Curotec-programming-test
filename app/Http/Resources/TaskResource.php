@@ -24,6 +24,7 @@ class TaskResource extends JsonResource
             'assigned_to' => $this->assigned_to,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
+            'activity_logs' => ActivityLogResource::collection($this->whenLoaded('activityLogs')),
         ];
     }
 }

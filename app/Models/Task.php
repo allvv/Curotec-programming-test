@@ -22,6 +22,11 @@ class Task extends Model
         'due_date' => 'date',
     ];
 
+    public function activityLogs()
+    {
+        return $this->morphMany(ActivityLog::class, 'loggable');
+    }
+
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
