@@ -4,16 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskStoreRequest;
 use App\Http\Requests\TaskUpdateRequest;
+use App\Http\Requests\TaskFilterRequest;
 use App\Models\Task;
+use App\Services\TaskService;
+use App\Http\Resources\TaskResource;
 
 class TaskController extends Controller
 {
+
+    public function __construct(protected TaskService $taskService) {}
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(TaskFilterRequest $request)
     {
-        return response()->json(Task::all(), 200);
+        $tasks = $this->taskService->getAll($request->all());
+
+        return TaskResource::collection($tasks);
     }
 
     /**
@@ -21,9 +29,9 @@ class TaskController extends Controller
      */
     public function store(TaskStoreRequest $request)
     {
-        $task = Task::create($request->validated());
+        $task = $this->taskService->create($request->validated());
 
-        return response()->json($task, 201);
+        return new TaskResource($task);
     }
 
     /**
@@ -31,7 +39,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return response()->json($task, 200);
+        return new TaskResource($task);
     }
 
     /**
@@ -39,9 +47,9 @@ class TaskController extends Controller
      */
     public function update(TaskUpdateRequest $request, Task $task)
     {
-        $task->update($request->validated());
+        $updatedTask = $this->taskService->update($task, $request->validated());
 
-        return response()->json($task, 200);
+        return new TaskResource($updatedTask);
     }
 
     /**
@@ -49,7 +57,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        $task->delete();
+        $this->taskService->delete($task);
 
         return response()->json(null, 204);
     }

@@ -17,4 +17,32 @@ class Task extends Model
         'due_date',
         'assigned_to',
     ];
+
+    protected $casts = [
+        'due_date' => 'date',
+    ];
+
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    public function scopePriority($query, $priority)
+    {
+        return $query->where('priority', $priority);
+    }
+
+    public function scopeDateRange($query, $start, $end)
+    {
+        if ($start && $end) {
+            return $query->whereBetween('due_date', [$start, $end]);
+        }
+        if ($start) {
+            return $query->where('due_date', '>=', $start);
+        }
+        if ($end) {
+            return $query->where('due_date', '<=', $end);
+        }
+        return $query;
+    }
 }
