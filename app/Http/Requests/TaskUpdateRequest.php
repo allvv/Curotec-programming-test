@@ -11,7 +11,8 @@ class TaskUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // TODO: implement authorization when rules become clear
+        return true;
     }
 
     /**
@@ -22,7 +23,12 @@ class TaskUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|nullable|string',
+            'status' => 'sometimes|required|in:pending,in_progress,completed',
+            'priority' => 'sometimes|required|in:low,medium,high',
+            'due_date' => 'sometimes|nullable|date',
+            'assigned_to' => 'sometimes|nullable|exists:users,id',
         ];
     }
 }

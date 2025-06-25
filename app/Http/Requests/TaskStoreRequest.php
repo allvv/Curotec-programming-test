@@ -11,7 +11,8 @@ class TaskStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // TODO: implement authorization when rules become clear
+        return true;
     }
 
     /**
@@ -22,7 +23,12 @@ class TaskStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255|unique:tasks,title',
+            'description' => 'nullable|string',
+            'status' => 'in:pending,in_progress,completed',
+            'priority' => 'in:low,medium,high',
+            'due_date' => 'nullable|date',
+            'assigned_to' => 'nullable|exists:users,id',
         ];
     }
 }
