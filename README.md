@@ -45,6 +45,16 @@ A RESTful task management API built with Laravel 11. Designed as part of a techn
     ```bash
     ./vendor/bin/sail artisan migrate --seed
 
+### Testing Setup Notes
+- In-memory SQLite database is used during testing for speed and isolation.
+- The .env.testing file should include:
+    ```bash
+    APP_ENV=testing
+    APP_KEY=base64:YOUR_KEY_HERE
+    DB_CONNECTION=sqlite
+    DB_DATABASE=:memory:
+- Migrations are automatically run for each test using RefreshDatabase.
+
 ## API Usage
 All API endpoints are versioned under /api/v1.
     
@@ -62,16 +72,81 @@ Task Endpoints:
 ## Filtering & Pagination
 You can filter tasks using the following query parameters:
 
-- status → pending, in_progress, completed
-- priority → low, medium, high
-- start_date / end_date → for due date range
-- per_page → number of items per page (max 100)
+    | Parameter    | Values                                |
+    | ------------ | ------------------------------------- |
+    | `status`     | `pending`, `in_progress`, `completed` |
+    | `priority`   | `low`, `medium`, `high`               |
+    | `start_date` | Format: `YYYY-MM-DD` (for due date)   |
+    | `end_date`   | Format: `YYYY-MM-DD` (for due date)   |
+    | `page`       | Integer (e.g., `1`, `2`, etc.)        |
+    | `per_page`   | Integer (max: 100, default: 10)       |
 
 Example:
 
     GET /api/v1/tasks?status=completed&priority=high&start_date=2024-01-01&end_date=2024-12-31&per_page=5
 
+
+##UI Details
+  - The user interface is designed to be simple and functional. It allows for basic task management, including creating, updating, deleting, and filtering tasks. Here are some important aspects of the UI:
+  - Task List: The UI displays a table listing all tasks, including their ID, title, status, priority, and due date. This allows users to view their tasks quickly.
+  - Task Filters: A basic filter form allows users to filter tasks based on status and priority. Pagination is also implemented to handle large numbers of tasks.
+  - Task Creation/Editing: A single form is used to both create and update tasks. The form includes fields for title, description, status, priority, and due_date. When a task is edited, the form is populated with the current task's details.
+  - Alerts: Success and error messages are displayed as alerts, providing feedback to the user after actions like creating, updating, or deleting tasks.
+  
+##Justification for Simplicity
+  - The UI is intentionally kept simple to focus on the core backend functionality for this project since I am a backend developer applying for a backend role. 
+  - I was told I could keep the UI simple for this reason 
    
+## API Examples
+All API endpoints are versioned under /api/v1.
+
+1. Create Task:
+    ```bash
+    curl -X POST http://localhost/api/v1/tasks \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json" \
+      -d '{
+        "title": "Buy groceries",
+        "description": "Milk, eggs, bread",
+        "status": "pending",
+        "priority": "high"
+    }'
+
+2. Get All Tasks
+    ```bash
+    curl http://localhost/api/v1/tasks \
+     -H "Accept: application/json"
+  
+3. Filter Tasks by Status & Priority
+    ```bash
+    curl "http://localhost/api/v1/tasks?status=pending&priority=high" \
+      -H "Accept: application/json"
+
+4. Paginate Results
+    ```bash
+    curl "http://localhost/api/v1/tasks?page=2&per_page=5" \
+      -H "Accept: application/json"
+
+5. Get a Specific Task
+   ```bash
+   curl http://localhost/api/v1/tasks/1 \
+     -H "Accept: application/json"
+
+6. Update a Task
+    ```bash
+    curl -X PATCH http://localhost/api/v1/tasks/1 \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json" \
+      -d '{
+        "status": "completed",
+        "priority": "medium"
+    }'
+
+7. Delete a Task
+   ```bash
+   curl -X DELETE http://localhost/api/v1/tasks/1 \
+     -H "Accept: application/json"
+
 ## Audit Trail
 
 The application includes an audit trail system for tracking changes to tasks. This feature uses Laravel's model observers and a polymorphic relationship to log activity.
@@ -87,7 +162,25 @@ The application includes an audit trail system for tracking changes to tasks. Th
 - Laravel’s default exception handler (App\Exceptions\Handler) has been customized to ensure clean, consistent API responses.
 - Errors are logged internally using Laravel’s logging system (default: storage/logs/laravel.log).
 - Error messages shown to the client are sanitized in production for security. Stack traces and debug details are only shown if APP_DEBUG=true in your .env.    
+
+## Testing
+
+This project uses [Pest](https://pestphp.com/) for unit and feature testing.
+
+To run the tests:
     
+    ./vendor/bin/sail test
+    # or
+    ./vendor/bin/sail pest
+    
+### Test Coverage
+Test cases include:
+
+- Task API: list, create, update, and delete tasks
+- TaskService: create, retrieve, filter, and delete tasks
+- JSON response structure and status code assertions
+
+
 ## Architectural Decisions
 
 - Form Request Validation: Using TaskStoreRequest, TaskUpdateRequest, and TaskFilterRequest for input validation and request sanitization.
@@ -98,14 +191,19 @@ The application includes an audit trail system for tracking changes to tasks. Th
 - API Resources: TaskResource ensures consistent and clean JSON formatting across all responses.
 
 ## To Do / In Progress
-- Implement Audit Trail via polymorphic model ActivityLog
-- Add Model Observers for logging task changes
-- Implement proper error and exception handling 
 - Add caching layer for performance (e.g., Redis)
-- Add frontend UI (minimal) with Bootstrap or jQuery
-- Handle global API exception formatting (JSON only)
-- Include Postman Collection for testing endpoints
  
+## Postman Collection
+A Postman collection is included for quick testing of all API endpoints.
+- File: TaskManagerAPI.postman_collection.json
+- Covers all major endpoints: list, filter, create, update, delete
+- No authentication or environment variables required — just import and run
+
+To use:
+
+1. Open Postman
+2. Click “Import” > “Upload Files”
+3. Select TaskManagerAPI.postman_collection.json from the project root
  
 ## Notes
 - API responses are returned in JSON format only.
