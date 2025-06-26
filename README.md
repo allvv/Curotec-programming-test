@@ -12,7 +12,6 @@ A RESTful task management API built with Laravel 11. Designed as part of a techn
 - Docker Compose
 - PHP ≥ 8.2 (via Sail)
 - Composer
-- Postman (optional, for testing API endpoints)
 
 ### Setup Instructions
 
@@ -82,6 +81,12 @@ The application includes an audit trail system for tracking changes to tasks. Th
 - Logs are stored in a dedicated `activity_logs` table using a polymorphic relationship.
 - The `user_id` field is nullable, as authentication is not implemented in this project.
 - Logs are not included in task API responses by default. They can be queried directly from the database or exposed through a dedicated endpoint if needed.
+    
+## Error & Exception Handling
+- All API routes are configured to return JSON responses only, including for error cases such as 404 Not Found, 422 Validation Errors, and 500 Internal Server Errors.
+- Laravel’s default exception handler (App\Exceptions\Handler) has been customized to ensure clean, consistent API responses.
+- Errors are logged internally using Laravel’s logging system (default: storage/logs/laravel.log).
+- Error messages shown to the client are sanitized in production for security. Stack traces and debug details are only shown if APP_DEBUG=true in your .env.    
     
 ## Architectural Decisions
 
