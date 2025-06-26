@@ -1,6 +1,6 @@
 # Task Manager API
 
-A RESTful task management API built with Laravel 11. Designed as part of a technical assessment to demonstrate clean architecture, use of Laravel features, and best development practices. Includes filtering, pagination, versioned endpoints, and request validation.
+A RESTful task management API built with Laravel 10. Designed as part of a technical assessment to demonstrate clean architecture, use of Laravel features, and best development practices. Includes filtering, pagination, versioned endpoints, and request validation.
 
 ---
 
@@ -86,8 +86,8 @@ Example:
     GET /api/v1/tasks?status=completed&priority=high&start_date=2024-01-01&end_date=2024-12-31&per_page=5
 
 
-##UI Details
-  - The user interface is designed to be simple and functional. It allows for basic task management, including creating, updating, deleting, and filtering tasks. Here are some important aspects of the UI:
+## UI Details
+The user interface is designed to be simple and functional. It allows for basic task management, including creating, updating, deleting, and filtering tasks. Here are some important aspects of the UI:
   - Task List: The UI displays a table listing all tasks, including their ID, title, status, priority, and due date. This allows users to view their tasks quickly.
   - Task Filters: A basic filter form allows users to filter tasks based on status and priority. Pagination is also implemented to handle large numbers of tasks.
   - Task Creation/Editing: A single form is used to both create and update tasks. The form includes fields for title, description, status, priority, and due_date. When a task is edited, the form is populated with the current task's details.
@@ -169,8 +169,6 @@ This project uses [Pest](https://pestphp.com/) for unit and feature testing.
 
 To run the tests:
     
-    ./vendor/bin/sail test
-    # or
     ./vendor/bin/sail pest
     
 ### Test Coverage
